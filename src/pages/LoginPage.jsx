@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function LoginPage({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -64,6 +64,16 @@ function LoginPage({ onLogin }) {
           >
             Login
           </button>
+          <div className="text-center">
+            <Link
+              to="/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-600 hover:text-blue-800"
+            >
+              Privacy Policy
+            </Link>
+          </div>
         </form>
       </div>
     </div>

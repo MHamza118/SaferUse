@@ -247,47 +247,16 @@ function Sidebar({ handleLogout }) {
 
             {/* Settings */}
             <li>
-              <div className="relative">
-                <button
-                  onClick={() => toggleDropdown('settings')}
-                  className={`w-full flex items-center justify-between py-3 px-4 rounded-lg transition-colors ${isActive('/settings')
-                    ? 'bg-blue-600 text-white'
-                    : 'hover:bg-gray-800'
-                    }`}
-                >
-                  <div className="flex items-center">
-                    <FontAwesomeIcon icon={faCog} className={`${collapsed ? 'text-lg' : 'mr-3'}`} />
-                    {!collapsed && <span>Settings</span>}
-                  </div>
-                  {!collapsed && (
-                    <FontAwesomeIcon
-                      icon={faChevronDown}
-                      className={`text-xs transition-transform duration-200 ${openDropdown.settings ? 'rotate-180' : ''}`}
-                    />
-                  )}
-                </button>
-
-                {openDropdown.settings && !collapsed && (
-                  <div className="pl-10 mt-1 space-y-1 bg-gray-800 rounded-md py-2">
-                    <Link
-                      to="/settings/profile"
-                      className={`block py-2 px-3 rounded-md text-sm hover:bg-gray-700 flex items-center ${location.pathname === '/settings/profile' ? 'text-blue-400' : ''
-                        }`}
-                    >
-                      <FontAwesomeIcon icon={faUser} className="mr-2 text-xs" />
-                      Profile Settings
-                    </Link>
-                    <Link
-                      to="/settings/security"
-                      className={`block py-2 px-3 rounded-md text-sm hover:bg-gray-700 flex items-center ${location.pathname === '/settings/security' ? 'text-blue-400' : ''
-                        }`}
-                    >
-                      <FontAwesomeIcon icon={faLock} className="mr-2 text-xs" />
-                      Security
-                    </Link>
-                  </div>
-                )}
-              </div>
+              <Link
+                to="/settings"
+                className={`flex items-center py-3 px-4 rounded-lg transition-colors ${isActive('/settings')
+                  ? 'bg-blue-600 text-white'
+                  : 'hover:bg-gray-800'
+                  }`}
+              >
+                <FontAwesomeIcon icon={faCog} className={`${collapsed ? 'text-lg' : 'mr-3'}`} />
+                {!collapsed && <span>Settings</span>}
+              </Link>
             </li>
           </ul>
         </nav>
