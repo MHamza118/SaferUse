@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   faClinicMedical,
   faCloud,
@@ -20,19 +20,36 @@ import {
   faFilter,
   faDownload,
   faSync,
-  faSearch
+  faSearch,
+  faQuoteRight,
+  faDollarSign
 } from '@fortawesome/free-solid-svg-icons';
-import CircularProgressBar from './CircularProgressBar';
+// Removed unused import for CircularProgressBar
 
 function MainContent() {
+  const navigate = useNavigate();
   // State for clinics data
   const [clinics, setClinics] = useState([
-    { name: 'Clinic A', address: '123 Main St', date: new Date().toLocaleDateString(), status: 'Active' },
-    { name: 'Clinic B', address: '456 Oak Ave', date: new Date().toLocaleDateString(), status: 'Active' },
-    { name: 'Clinic C', address: '789 Pine Rd', date: new Date().toLocaleDateString(), status: 'Inactive' },
-    { name: 'Clinic D', address: '101 Maple Dr', date: new Date().toLocaleDateString(), status: 'Active' },
-    { name: 'Clinic E', address: '202 Cedar Ln', date: new Date().toLocaleDateString(), status: 'Active' },
-    { name: 'Clinic F', address: '303 Birch Blvd', date: new Date().toLocaleDateString(), status: 'Inactive' },
+    {
+      name: 'Test ABC Bloomington Clinic',
+      address: '123 Walnut Street Bloomington Indiana 47401',
+      dateAdded: '03/19/2024'
+    },
+    {
+      name: 'Indiana Recovery Alliance MCSSP',
+      address: '118 S Rogers St Suite 2 Bloomington, IN 47404',
+      dateAdded: '03/19/2024'
+    },
+    {
+      name: 'Aspire Indiana Health HARP',
+      address: '2009 Brown St Suite #2 Anderson, IN 46016',
+      dateAdded: '03/19/2024'
+    },
+    {
+      name: 'Tippecanoe County Health Department',
+      address: '2300 Ferry St Lafayette, IN 47904',
+      dateAdded: '03/19/2024'
+    }
   ]);
 
   // State for clinic form
@@ -103,29 +120,117 @@ function MainContent() {
   const totalData = dashboardData.reduce((acc, curr) => acc + curr.value, 0);
   const clinicProgress = (dashboardData[0].value / totalData) * 100;
 
-  // Simulate data refresh
+  // New state for stats
+  const [stats, setStats] = useState({
+    clinics: { count: 0, change: 0 },
+    quotes: { count: 0, change: 5 },
+    donations: { count: 0, change: -2 },
+    users: { count: 0, change: 12 }
+  });
+
+  // Load stats on component mount
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = () => {
+    // Load clinics count
+    const clinics = JSON.parse(localStorage.getItem('clinics')) || [];
+
+    // Load quotes count (assuming quotes are stored in localStorage)
+    const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+
+    // Load donations count
+    const donations = JSON.parse(localStorage.getItem('donations')) || [];
+
+    // Load users count
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+
+    setStats({
+      clinics: {
+        count: clinics.length,
+        change: 8 // Example percentage change
+      },
+      quotes: {
+        count: quotes.length || 9, // Default to 9 if no quotes exist
+        change: 5
+      },
+      donations: {
+        count: donations.length || 3, // Default to 3 if no donations exist
+        change: -2
+      },
+      users: {
+        count: users.length || 42, // Default to 42 if no users exist
+        change: 12
+      }
+    });
+  };
+
   const refreshData = () => {
     setIsLoading(true);
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      // Update dashboard data with random changes
-      const updatedData = dashboardData.map(item => {
-        const changePercent = Math.floor(Math.random() * 10) - 3; // Random change between -3 and +6
-        const newValue = Math.max(1, item.value + Math.floor(Math.random() * 5) - 1); // Random value change
-        return {
-          ...item,
-          value: newValue,
-          percentage: Math.abs(changePercent),
-          increase: changePercent >= 0
-        };
-      });
-      
-      setDashboardData(updatedData);
-      setRefreshTime(new Date());
-      setIsLoading(false);
-    }, 800);
+    loadStats();
+    setRefreshTime(new Date());
+    setTimeout(() => setIsLoading(false), 500);
   };
+
+  const exportData = () => {
+    const data = {
+      clinics: JSON.parse(localStorage.getItem('clinics')) || [],
+      quotes: JSON.parse(localStorage.getItem('quotes')) || [],
+      donations: JSON.parse(localStorage.getItem('donations')) || [],
+      users: JSON.parse(localStorage.getItem('users')) || []
+    };
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dashboard-data.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleCardClick = (section) => {
+    switch (section) {
+      case 'clinics':
+        navigate('/clinic/list');
+        break;
+      case 'quotes':
+        navigate('/quotes');
+        break;
+      case 'donations':
+        navigate('/donations');
+        break;
+      case 'users':
+        navigate('/users');
+        break;
+      default:
+        break;
+    }
+  };
+
+  const StatCard = ({ title, count, change, icon, color, onClick }) => (
+    <div
+      onClick={onClick}
+      className="bg-white p-6 rounded-xl shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+    >
+      <div className="flex justify-between items-start">
+        <div>
+          <h3 className="text-gray-500 text-sm mb-2">{title}</h3>
+          <p className="text-3xl font-semibold text-gray-800">{count}</p>
+          <p className={`text-sm mt-2 ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            <span>{change >= 0 ? '↑' : '↓'} {Math.abs(change)}% </span>
+            <span className="text-gray-400">vs last week</span>
+          </p>
+        </div>
+        <div className={`p-3 rounded-full ${color}`}>
+          <FontAwesomeIcon icon={icon} className="text-white text-xl" />
+        </div>
+      </div>
+    </div>
+  );
 
   // Change time period data
   const changeTimePeriod = (period) => {
@@ -251,15 +356,82 @@ function MainContent() {
     setEditingClinic(null);
   };
 
-  // Export data function
-  const exportData = () => {
-    // In a real app, this would generate a CSV or Excel file
-    alert('Data export started. Your file will be ready for download shortly.');
-  };
-
   // Mark all notifications as read
   const markAllNotificationsAsRead = () => {
     setNotifications([]);
+  };
+
+  useEffect(() => {
+    // Load clinics from localStorage when component mounts
+    const savedClinics = JSON.parse(localStorage.getItem('clinics'));
+    if (savedClinics && savedClinics.length > 0) {
+      setClinics(savedClinics);
+    }
+  }, []);
+
+  // Update clinics overview section in the dashboard
+  const renderClinicsOverview = () => {
+    return (
+      <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-lg font-bold text-gray-800">Clinics Overview</h2>
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search clinics..."
+                className="pl-10 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            </div>
+            <Link
+              to="/clinic/list"
+              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+            >
+              View All
+            </Link>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[35%]">Clinic Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[35%]">Address</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[20%]">Date Added</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-[10%]">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredClinics.map((clinic, index) => (
+                <tr key={index} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{clinic.name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{clinic.address}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{clinic.dateAdded}</td>
+                  <td className="px-6 py-4 text-right text-sm whitespace-nowrap">
+                    <button
+                      onClick={() => handleEditClick(clinic)}
+                      className="text-blue-600 hover:text-blue-900 mr-4 transition-colors"
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(clinic.name)}
+                      className="text-red-600 hover:text-red-900 transition-colors"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -268,7 +440,7 @@ function MainContent() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
-          <p className="text-gray-500">Welcome back! Here's what's happening with your organization today.</p>
+          <p className="text-gray-500">Welcome back! Here&#39;s what&#39;s happening with your organization today.</p>
         </div>
         <div className="flex items-center space-x-3">
           <span className="text-sm text-gray-500">
@@ -294,37 +466,40 @@ function MainContent() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {dashboardData.map((item, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg border-l-4" style={{ borderLeftColor: item.color }}>
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-gray-500 text-sm font-medium">{item.label}</p>
-                <h3 className="text-2xl font-bold text-gray-800 mt-1">{item.value}</h3>
-                <div className="flex items-center mt-2">
-                  <span className={`text-xs font-medium ${item.increase ? 'text-green-500' : 'text-red-500'} flex items-center`}>
-                    <FontAwesomeIcon icon={item.increase ? faArrowUp : faArrowDown} className="mr-1" />
-                    {item.percentage}%
-                  </span>
-                  <span className="text-xs text-gray-400 ml-1">vs last {timePeriod.slice(0, -2)}</span>
-                </div>
-              </div>
-              <div className="p-3 rounded-full" style={{ backgroundColor: `${item.color}20` }}>
-                <FontAwesomeIcon
-                  icon={
-                    index === 0 ? faClinicMedical :
-                      index === 1 ? faCloud :
-                        index === 2 ? faDonate :
-                          faUsers
-                  }
-                  className="text-xl"
-                  style={{ color: item.color }}
-                />
-              </div>
-            </div>
-          </div>
-        ))}
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <StatCard
+          title="Clinic"
+          count={stats.clinics.count}
+          change={stats.clinics.change}
+          icon={faClinicMedical}
+          color="bg-red-500"
+          onClick={() => handleCardClick('clinics')}
+        />
+        <StatCard
+          title="Quotes"
+          count={stats.quotes.count}
+          change={stats.quotes.change}
+          icon={faQuoteRight}
+          color="bg-blue-500"
+          onClick={() => handleCardClick('quotes')}
+        />
+        <StatCard
+          title="Donations"
+          count={stats.donations.count}
+          change={stats.donations.change}
+          icon={faDollarSign}
+          color="bg-green-500"
+          onClick={() => handleCardClick('donations')}
+        />
+        <StatCard
+          title="Users"
+          count={stats.users.count}
+          change={stats.users.change}
+          icon={faUsers}
+          color="bg-purple-500"
+          onClick={() => handleCardClick('users')}
+        />
       </div>
 
       {/* Middle Section - Charts and Activity */}
@@ -335,8 +510,7 @@ function MainContent() {
             <h2 className="text-lg font-bold text-gray-800">Performance Analytics</h2>
             <div className="flex space-x-2">
               <button 
-                className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                  timePeriod === 'weekly' 
+                className={`px-3 py-1 text-sm rounded-md transition-colors ${timePeriod === 'weekly'
                     ? 'bg-blue-50 text-blue-600' 
                     : 'text-gray-500 hover:bg-gray-100'
                 }`}
@@ -346,8 +520,7 @@ function MainContent() {
                 Weekly
               </button>
               <button 
-                className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                  timePeriod === 'monthly' 
+                className={`px-3 py-1 text-sm rounded-md transition-colors ${timePeriod === 'monthly'
                     ? 'bg-blue-50 text-blue-600' 
                     : 'text-gray-500 hover:bg-gray-100'
                 }`}
@@ -357,8 +530,7 @@ function MainContent() {
                 Monthly
               </button>
               <button 
-                className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                  timePeriod === 'yearly' 
+                className={`px-3 py-1 text-sm rounded-md transition-colors ${timePeriod === 'yearly'
                     ? 'bg-blue-50 text-blue-600' 
                     : 'text-gray-500 hover:bg-gray-100'
                 }`}
@@ -432,76 +604,7 @@ function MainContent() {
       {/* Bottom Section - Table and Notifications */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Clinics Table */}
-        <div className="bg-white rounded-lg shadow-md p-6 lg:col-span-2">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold text-gray-800">Clinics Overview</h2>
-            <div className="flex space-x-3">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search clinics..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="py-2 pl-9 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm w-48"
-                />
-                <FontAwesomeIcon 
-                  icon={faSearch} 
-                  className="absolute left-3 top-3 text-gray-400"
-                />
-              </div>
-              <Link to="/clinic" className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors">
-                View All
-              </Link>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clinic Name</th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Added</th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredClinics.length > 0 ? (
-                  filteredClinics.slice(0, 5).map((clinic, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="py-3 px-4 text-sm text-gray-800">{clinic.name}</td>
-                      <td className="py-3 px-4 text-sm text-gray-600">{clinic.address}</td>
-                      <td className="py-3 px-4 text-sm text-gray-600">{clinic.date}</td>
-                      <td className="py-3 px-4">
-                        <span className={`px-2 py-1 text-xs rounded-full ${clinic.status === 'Active'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                          }`}>
-                          {clinic.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm">
-                        <button className="text-blue-600 hover:text-blue-800 mr-3" onClick={() => handleEditClick(clinic)}>
-                          <FontAwesomeIcon icon={faEdit} />
-                        </button>
-                        <button className="text-red-500 hover:text-red-700" onClick={() => handleDeleteClick(clinic.name)}>
-                          <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="5" className="py-4 text-center text-gray-500">
-                      No clinics found matching your search.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {renderClinicsOverview()}
 
         {/* Notifications */}
         <div className="bg-white rounded-lg shadow-md p-6">

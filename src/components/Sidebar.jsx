@@ -7,12 +7,12 @@ import {
   faCloud,
   faSignOutAlt,
   faChevronRight,
-  faQuestionCircle,
   faChevronDown,
   faList,
   faPlus,
   faUsers,
-  faChartPie
+  faUser,
+  faLock,
 } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
@@ -29,8 +29,6 @@ function Sidebar({ handleLogout }) {
     clinics: false,
     quotes: false,
     donations: false,
-    users: false,
-    analytics: false,
     settings: false
   });
 
@@ -233,139 +231,84 @@ function Sidebar({ handleLogout }) {
               </div>
             </li>
 
-            {/* Users with dropdown */}
+            {/* Users */}
+            <li>
+              <Link
+                to="/users"
+                className={`flex items-center py-3 px-4 rounded-lg transition-colors ${isActive('/users')
+                  ? 'bg-blue-600 text-white'
+                  : 'hover:bg-gray-800'
+                  }`}
+              >
+                <FontAwesomeIcon icon={faUsers} className={`${collapsed ? 'text-lg' : 'mr-3'}`} />
+                {!collapsed && <span>Users</span>}
+              </Link>
+            </li>
+
+            {/* Settings */}
             <li>
               <div className="relative">
                 <button
-                  onClick={() => toggleDropdown('users')}
-                  className={`w-full flex items-center justify-between py-3 px-4 rounded-lg transition-colors ${isActive('/users') || location.pathname.includes('/users/')
+                  onClick={() => toggleDropdown('settings')}
+                  className={`w-full flex items-center justify-between py-3 px-4 rounded-lg transition-colors ${isActive('/settings')
                     ? 'bg-blue-600 text-white'
                     : 'hover:bg-gray-800'
                     }`}
                 >
                   <div className="flex items-center">
-                    <FontAwesomeIcon icon={faUsers} className={`${collapsed ? 'text-lg' : 'mr-3'}`} />
-                    {!collapsed && <span>Users</span>}
+                    <FontAwesomeIcon icon={faCog} className={`${collapsed ? 'text-lg' : 'mr-3'}`} />
+                    {!collapsed && <span>Settings</span>}
                   </div>
                   {!collapsed && (
                     <FontAwesomeIcon
                       icon={faChevronDown}
-                      className={`text-xs transition-transform duration-200 ${openDropdown.users ? 'rotate-180' : ''}`}
+                      className={`text-xs transition-transform duration-200 ${openDropdown.settings ? 'rotate-180' : ''}`}
                     />
                   )}
                 </button>
 
-                {openDropdown.users && !collapsed && (
+                {openDropdown.settings && !collapsed && (
                   <div className="pl-10 mt-1 space-y-1 bg-gray-800 rounded-md py-2">
                     <Link
-                      to="/users/list"
-                      className={`block py-2 px-3 rounded-md text-sm hover:bg-gray-700 flex items-center ${location.pathname === '/users/list' ? 'text-blue-400' : ''
+                      to="/settings/profile"
+                      className={`block py-2 px-3 rounded-md text-sm hover:bg-gray-700 flex items-center ${location.pathname === '/settings/profile' ? 'text-blue-400' : ''
                         }`}
                     >
-                      <FontAwesomeIcon icon={faList} className="mr-2 text-xs" />
-                      List of Users
+                      <FontAwesomeIcon icon={faUser} className="mr-2 text-xs" />
+                      Profile Settings
                     </Link>
                     <Link
-                      to="/users/add"
-                      className={`block py-2 px-3 rounded-md text-sm hover:bg-gray-700 flex items-center ${location.pathname === '/users/add' ? 'text-blue-400' : ''
+                      to="/settings/security"
+                      className={`block py-2 px-3 rounded-md text-sm hover:bg-gray-700 flex items-center ${location.pathname === '/settings/security' ? 'text-blue-400' : ''
                         }`}
                     >
-                      <FontAwesomeIcon icon={faPlus} className="mr-2 text-xs" />
-                      Add New User
+                      <FontAwesomeIcon icon={faLock} className="mr-2 text-xs" />
+                      Security
                     </Link>
                   </div>
                 )}
               </div>
             </li>
-
-            {/* Analytics with dropdown */}
-            <li>
-              <div className="relative">
-                <button
-                  onClick={() => toggleDropdown('analytics')}
-                  className={`w-full flex items-center justify-between py-3 px-4 rounded-lg transition-colors ${isActive('/analytics') || location.pathname.includes('/analytics/')
-                    ? 'bg-blue-600 text-white'
-                    : 'hover:bg-gray-800'
-                    }`}
-                >
-                  <div className="flex items-center">
-                    <FontAwesomeIcon icon={faChartPie} className={`${collapsed ? 'text-lg' : 'mr-3'}`} />
-                    {!collapsed && <span>Analytics</span>}
-                  </div>
-                  {!collapsed && (
-                    <FontAwesomeIcon
-                      icon={faChevronDown}
-                      className={`text-xs transition-transform duration-200 ${openDropdown.analytics ? 'rotate-180' : ''}`}
-                    />
-                  )}
-                </button>
-
-                {openDropdown.analytics && !collapsed && (
-                  <div className="pl-10 mt-1 space-y-1 bg-gray-800 rounded-md py-2">
-                    <Link
-                      to="/analytics/list"
-                      className={`block py-2 px-3 rounded-md text-sm hover:bg-gray-700 flex items-center ${location.pathname === '/analytics/list' ? 'text-blue-400' : ''
-                        }`}
-                    >
-                      <FontAwesomeIcon icon={faList} className="mr-2 text-xs" />
-                      List of Analytics
-                    </Link>
-                    <Link
-                      to="/analytics/add"
-                      className={`block py-2 px-3 rounded-md text-sm hover:bg-gray-700 flex items-center ${location.pathname === '/analytics/add' ? 'text-blue-400' : ''
-                        }`}
-                    >
-                      <FontAwesomeIcon icon={faPlus} className="mr-2 text-xs" />
-                      Add New Analytics
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </li>
-
           </ul>
         </nav>
       </div>
 
-      {/* Bottom section */}
-      <div className="mb-8 px-3 space-y-2">
-        <Link
-          to="/settings"
-          className={`flex items-center py-3 px-4 rounded-lg transition-colors ${isActive('/settings')
-            ? 'bg-blue-600 text-white'
-            : 'hover:bg-gray-800'
-            }`}
-        >
-          <FontAwesomeIcon icon={faCog} className={`${collapsed ? 'text-lg' : 'mr-3'}`} />
-          {!collapsed && <span>Settings</span>}
-        </Link>
-
-        <Link
-          to="/help"
-          className={`flex items-center py-3 px-4 rounded-lg transition-colors ${isActive('/help')
-            ? 'bg-blue-600 text-white'
-            : 'hover:bg-gray-800'
-            }`}
-        >
-          <FontAwesomeIcon icon={faQuestionCircle} className={`${collapsed ? 'text-lg' : 'mr-3'}`} />
-          {!collapsed && <span>Help</span>}
-        </Link>
-
-        <Link
-          to="/login"
+      {/* Logout Button */}
+      <div className="p-4">
+        <button
           onClick={handleLogout}
-          className="flex items-center py-3 px-4 rounded-lg text-red-400 hover:bg-gray-800 transition-colors"
+          className="w-full flex items-center py-3 px-4 rounded-lg text-red-400 hover:bg-gray-800 transition-colors"
         >
           <FontAwesomeIcon icon={faSignOutAlt} className={`${collapsed ? 'text-lg' : 'mr-3'}`} />
           {!collapsed && <span>Logout</span>}
-        </Link>
+        </button>
       </div>
     </div>
   );
 }
 
 Sidebar.propTypes = {
-  handleLogout: PropTypes.func.isRequired, // Add propTypes validation
+  handleLogout: PropTypes.func.isRequired
 };
 
 export default Sidebar;

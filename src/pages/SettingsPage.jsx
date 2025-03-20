@@ -13,7 +13,7 @@ function SettingsPage({ onProfilePhotoChange, isSuperAdmin }) {
     mobile: '',
     profilePhoto: ''
   });
- 
+
 
   const handleAddAdmin = (e) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ function SettingsPage({ onProfilePhotoChange, isSuperAdmin }) {
     setNewAdmin({ ...newAdmin, [name]: value });
   };
 
-  
+
   useEffect(() => {
     const storedAdmins = JSON.parse(localStorage.getItem('admins'));
     setAdmins(storedAdmins || []);
@@ -40,7 +40,7 @@ function SettingsPage({ onProfilePhotoChange, isSuperAdmin }) {
     email: '',
     address: '',
     mobile: '',
-    password:'',
+    password: '',
     profilePhoto: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgj9zAP5dPVfTc357VxZrF9hXYbG2ybB4vJQ&s',
   });
   const [isEditing, setIsEditing] = useState(false);
@@ -62,7 +62,7 @@ function SettingsPage({ onProfilePhotoChange, isSuperAdmin }) {
     email: '',
     address: '',
     mobile: '',
-    password:'',
+    password: '',
     profilePhoto: ''
   });
 
@@ -129,7 +129,7 @@ function SettingsPage({ onProfilePhotoChange, isSuperAdmin }) {
       email: '',
       address: '',
       mobile: '',
-      password:'',
+      password: '',
       profilePhoto: '',
     });
     setFormErrors({
@@ -138,7 +138,7 @@ function SettingsPage({ onProfilePhotoChange, isSuperAdmin }) {
       email: false,
       address: false,
       mobile: false,
-      password:'',
+      password: '',
       profilePhoto: '',
     });
   };
@@ -193,13 +193,13 @@ function SettingsPage({ onProfilePhotoChange, isSuperAdmin }) {
     // Filter out the admin at the specified index
     const updatedAdmins = admins.filter((_, i) => i !== index);
     setAdmins(updatedAdmins);
-    localStorage.setItem('admins', JSON.stringify(updatedAdmins)); // Update the local storage
+    localStorage.setItem('admins', JSON.stringify(updatedAdmins));
   };
-  
+
   const handleEditAdmin = (index) => {
     const adminToEdit = admins[index];
-    setNewAdmin(adminToEdit); // Pre-populate the form with the admin's data for editing
-    setIsFormVisible(true); // Show the form for editing
+    setNewAdmin(adminToEdit);
+    setIsFormVisible(true);
   };
 
   return (
@@ -322,7 +322,7 @@ function SettingsPage({ onProfilePhotoChange, isSuperAdmin }) {
             Cancel
           </button>
         )}
-       {isSuperAdmin && (
+        {isSuperAdmin && (
           <button
             className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 mt-4"
             onClick={() => setIsFormVisible(!isFormVisible)}
@@ -341,48 +341,48 @@ function SettingsPage({ onProfilePhotoChange, isSuperAdmin }) {
           <input type="text" name="address" placeholder="Address" value={newAdmin.address} onChange={handleChange} required />
           <input type="text" name="mobile" placeholder="Mobile" value={newAdmin.mobile} onChange={handleChange} required />
           <input type="text" name="password" placeholder="password" value={newAdmin.password} onChange={handleChange} required />
-         
+
           <button type="submit">Save Admin</button>
         </form>
       )}
 
-<div className="mt-8">
-    <h3 className="text-xl mt-6">Added Admins</h3>
-    <ul>
-      {admins.map((admin, index) => (
-        <li key={index} className="border p-2 my-2 flex justify-between">
-          <div>
-            {admin.firstName} {admin.lastName} - {admin.email} - {admin.address} - {admin.mobile}
-          </div>
+      <div className="mt-8">
+        <h3 className="text-xl mt-6">Added Admins</h3>
+        <ul>
+          {admins.map((admin, index) => (
+            <li key={index} className="border p-2 my-2 flex justify-between">
+              <div>
+                {admin.firstName} {admin.lastName} - {admin.email} - {admin.address} - {admin.mobile}
+              </div>
 
-          {/* Show Edit and Delete buttons only if the user is a superadmin */}
-          {isSuperAdmin && (
-            <div className="flex space-x-2">
-              <button
-                className="flex items-center bg-yellow-500 text-white px-2 py-1 rounded-lg hover:bg-yellow-600"
-                onClick={() => handleEditAdmin(index)}
-              >
-                <FontAwesomeIcon icon={faEdit} className="mr-1" />
-                Edit
-              </button>
-              <button
-                className="flex items-center bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600"
-                onClick={() => handleDeleteAdmin(index)}
-              >
-                <FontAwesomeIcon icon={faTrashAlt} className="mr-1" />
-                Delete
-              </button>
-            </div>
-          )}
-        </li>
-      ))}
-    </ul>
-  </div>
-   
+              {/* Show Edit and Delete buttons only if the user is a superadmin */}
+              {isSuperAdmin && (
+                <div className="flex space-x-2">
+                  <button
+                    className="flex items-center bg-yellow-500 text-white px-2 py-1 rounded-lg hover:bg-yellow-600"
+                    onClick={() => handleEditAdmin(index)}
+                  >
+                    <FontAwesomeIcon icon={faEdit} className="mr-1" />
+                    Edit
+                  </button>
+                  <button
+                    className="flex items-center bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600"
+                    onClick={() => handleDeleteAdmin(index)}
+                  >
+                    <FontAwesomeIcon icon={faTrashAlt} className="mr-1" />
+                    Delete
+                  </button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
 
       {/* Added Admins Data */}
       <div className="mt-8">
-      
+
         <div className="space-y-4">
           {addedData.map((data, index) => (
             <div key={index} className="flex items-center space-x-4 border-b py-2">

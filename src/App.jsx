@@ -8,6 +8,7 @@ import QuotesPage from './pages/QuotesPages';
 import ClinicPage from './pages/ClinicPage';
 import SettingsPage from './pages/SettingsPage';
 import LoginPage from './pages/LoginPage';
+import UsersPage from './pages/UsersPage';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -100,9 +101,10 @@ function App() {
               <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
               <Route path="/" element={isLoggedIn ? <MainContent /> : <Navigate to="/login" />} />
               <Route path="/dashboard" element={isLoggedIn ? <MainContent /> : <Navigate to="/login" />} />
-              <Route path="/clinic" element={isLoggedIn ? <ClinicPage /> : <Navigate to="/login" />} />
+              <Route path="/clinic/*" element={isLoggedIn ? <ClinicPage /> : <Navigate to="/login" />} />
               <Route path="/quotes" element={isLoggedIn ? <QuotesPage /> : <Navigate to="/login" />} />
               <Route path="/donations" element={isLoggedIn ? <DonationsPage /> : <Navigate to="/login" />} />
+              <Route path="/users" element={isLoggedIn ? <UsersPage /> : <Navigate to="/login" />} />
               <Route path="/settings" element={isLoggedIn ? <SettingsPage onProfilePhotoChange={handleProfilePhotoChange} isSuperAdmin={isSuperAdmin} /> : <Navigate to="/login" />} />
             </Routes>
           </main>
